@@ -1,0 +1,57 @@
+#include <Stepper.h>
+
+// Definisikan pin-penentu motor stepper
+#define motorStepPin 2
+#define motorDirPin 3
+
+// Inisialisasi objek motor stepper
+Stepper motor(200, motorStepPin, motorDirPin);
+
+// Definisikan pin-penentu sensor ultrasonik
+#define trigPin 4
+#define echoPin 5
+
+// Variabel untuk mengukur jarak
+long duration;
+int distance;
+
+void setup() {
+  // Set up pin sebagai OUTPUT atau INPUT
+  pinMode(trigPin, OUTPUT);
+  pinMode(echoPin, INPUT);
+
+  // Set up kecepatan motor stepper
+  motor.setSpeed(200); // Sesuaikan dengan kebutuhan Anda
+
+  // Inisialisasi Serial Monitor untuk debugging (opsional)
+  Serial.begin(9600);
+}
+
+void loop() {
+  // Mengirimkan pulsa ultrasonik
+  digitalWrite(trigPin, LOW);
+  delayMicroseconds(2);
+  digitalWrite(trigPin, HIGH);
+  delayMicroseconds(10);
+  digitalWrite(trigPin, LOW);
+
+  // Menerima dan menghitung waktu pantulan
+  duration = pulseIn(echoPin, HIGH);
+
+  // Menghitung jarak dalam cm
+  distance = duration * 0.034 / 2;
+
+  // Menggerakkan motor stepper berdasarkan jarak yang terdeteksi
+  if (distance > 10) {
+    motor.step(200); // Menggerakkan motor ke depan sejauh 200 langkah (sesuaikan dengan kebutuhan Anda)
+    delay(1000); // Delay untuk memberikan waktu pemotongan
+  }
+
+  // Menampilkan jarak yang terdeteksi pada Serial Monitor (opsional)
+  Serial.print("Distance: ");
+  Serial.print(distance);
+  Serial.println(" cm");
+
+  // Menunda sejenak sebelum melanjutkan loop
+  delay(100);
+}
